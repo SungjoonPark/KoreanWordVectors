@@ -1,7 +1,7 @@
 # Word Vector Representation for Korean: Evaluation Set
-**Subword-level Word Vector Representations for Korean**
-*Sungjoon Park, Jeongmin Byun, Sion Baek, Yongseok Cho, Alice Oh*
-*Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018)*
+**Subword-level Word Vector Representations for Korean**<br/>
+*Sungjoon Park, Jeongmin Byun, Sion Baek, Yongseok Cho, Alice Oh*<br/>
+*Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018)*<br/>
 
 ## Abstract
 Research on distributed word representations is focused on widely-used languages such as English. Although the same methods can be used for other languages, language-specific knowledge can enhance the accuracy and richness of word vector representations. In this paper, we look at improving distributed word representations for Korean using knowledge about the unique linguistic structure of Korean. Specifically, we decompose Korean words into the jamo-level, beyond the character-level, allowing a systematic use of subword information. To evaluate the vectors,w e develop Korean test sets for word similarity and analogy and make them publicly available. The results show that our simple method outperforms word2vec and character-level Skip-Grams on semantic and syntactic similarity and analogy tasks and contributes positively toward down-stream NLP tasks such as sentiment analysis.
