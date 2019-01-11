@@ -1,0 +1,270 @@
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+#include "args.h"
+
+#include <stdlib.h>
+
+#include <iostream>
+
+namespace fasttext {
+
+Args::Args() {
+  lr = 0.05;
+  dim = 100;
+  ws = 5;
+  epoch = 5;
+  minCount = 5;
+  minCountLabel = 0;
+  neg = 5;
+  wordNgrams = 1;
+  loss = loss_name::ns;
+  model = model_name::sg;
+  bucket = 10000000;
+  minn = 1;
+  maxn = 4;
+  minjn = 3;
+  maxjn = 5;
+  emptyjschar = "e";
+  thread = 12;
+  lrUpdateRate = 100;
+  t = 1e-4;
+  label = "__label__";
+  verbose = 2;
+  pretrainedVectors = "";
+  saveOutput = 0;
+
+  qout = false;
+  retrain = false;
+  qnorm = false;
+  cutoff = 0;
+  dsub = 2;
+}
+
+std::string Args::lossToString(loss_name ln) {
+  switch (ln) {
+    case loss_name::hs:
+      return "hs";
+    case loss_name::ns:
+      return "ns";
+    case loss_name::softmax:
+      return "softmax";
+  }
+  return "Unknown loss!"; // should never happen
+}
+
+void Args::parseArgs(const std::vector<std::string>& args) {
+  std::string command(args[1]);
+  if (command == "supervised") {
+    model = model_name::sup;
+    loss = loss_name::softmax;
+    minCount = 1;
+    minn = 0;
+    minjn = 0;
+    maxn = 0;
+    maxjn = 0;
+    lr = 0.1;
+  } else if (command == "cbow") {
+    model = model_name::cbow;
+  }
+  int ai = 2;
+  while (ai < args.size()) {
+    if (args[ai][0] != '-') {
+      std::cerr << "Provided argument without a dash! Usage:" << std::endl;
+      printHelp();
+      exit(EXIT_FAILURE);
+    }
+    if (args[ai] == "-h") {
+      std::cerr << "Here is the help! Usage:" << std::endl;
+      printHelp();
+      exit(EXIT_FAILURE);
+    } else if (args[ai] == "-input") {
+      input = std::string(args[ai + 1]);
+    } else if (args[ai] == "-test") {
+      test = std::string(args[ai + 1]);
+    } else if (args[ai] == "-output") {
+      output = std::string(args[ai + 1]);
+    } else if (args[ai] == "-emptyjschar") {
+      emptyjschar = std::string(args[ai + 1]);
+    } else if (args[ai] == "-lr") {
+      lr = std::stof(args[ai + 1]);
+    } else if (args[ai] == "-lrUpdateRate") {
+      lrUpdateRate = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-dim") {
+      dim = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-ws") {
+      ws = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-epoch") {
+      epoch = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-minCount") {
+      minCount = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-minCountLabel") {
+      minCountLabel = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-neg") {
+      neg = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-wordNgrams") {
+      wordNgrams = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-loss") {
+      if (args[ai + 1] == "hs") {
+        loss = loss_name::hs;
+      } else if (args[ai + 1] == "ns") {
+        loss = loss_name::ns;
+      } else if (args[ai + 1] == "softmax") {
+        loss = loss_name::softmax;
+      } else {
+        std::cerr << "Unknown loss: " << args[ai + 1] << std::endl;
+        printHelp();
+        exit(EXIT_FAILURE);
+      }
+    } else if (args[ai] == "-bucket") {
+      bucket = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-minn") {
+      minn = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-maxn") {
+      maxn = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-minjn") {
+      minjn = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-maxjn") {
+      maxjn = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-thread") {
+      thread = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-t") {
+      t = std::stof(args[ai + 1]);
+    } else if (args[ai] == "-label") {
+      label = std::string(args[ai + 1]);
+    } else if (args[ai] == "-verbose") {
+      verbose = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-pretrainedVectors") {
+      pretrainedVectors = std::string(args[ai + 1]);
+    } else if (args[ai] == "-saveOutput") {
+      saveOutput = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-qnorm") {
+      qnorm = true; ai--;
+    } else if (args[ai] == "-retrain") {
+      retrain = true; ai--;
+    } else if (args[ai] == "-qout") {
+      qout = true; ai--;
+    } else if (args[ai] == "-cutoff") {
+    cutoff = std::stoi(args[ai + 1]);
+    } else if (args[ai] == "-dsub") {
+      dsub = std::stoi(args[ai + 1]);
+    } else {
+      std::cerr << "Unknown argument: " << args[ai] << std::endl;
+      printHelp();
+      exit(EXIT_FAILURE);
+    }
+    ai += 2;
+  }
+  if (input.empty() || output.empty()) {
+    std::cerr << "Empty input or output path." << std::endl;
+    printHelp();
+    exit(EXIT_FAILURE);
+  }
+  if (wordNgrams <= 1 && maxn == 0) {
+    bucket = 0;
+  }
+}
+
+void Args::printHelp() {
+  printBasicHelp();
+  printDictionaryHelp();
+  printTrainingHelp();
+  printQuantizationHelp();
+}
+
+
+void Args::printBasicHelp() {
+  std::cerr
+    << "\nThe following arguments are mandatory:\n"
+    << "  -input              training file path\n"
+    << "  -output             output file path\n"
+    << "\nThe following arguments are optional:\n"
+    << "  -verbose            verbosity level [" << verbose << "]\n";
+}
+
+void Args::printDictionaryHelp() {
+  std::cerr
+    << "\nThe following arguments for the dictionary are optional:\n"
+    << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
+    << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
+    << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
+    << "  -bucket             number of buckets [" << bucket << "]\n"
+    << "  -minn               min length of char ngram [" << minn << "]\n"
+    << "  -maxn               max length of char ngram [" << maxn << "]\n"
+    << "  -minjn              min length of jamo ngram [" << minjn << "]\n"
+    << "  -maxjn              max length of jamo ngram [" << maxjn << "]\n"
+    << "  -emptyjschar        empty jongsung symbol. (type:char) [" << emptyjschar << "]\n"
+    << "  -t                  sampling threshold [" << t << "]\n"
+    << "  -label              labels prefix [" << label << "]\n";
+}
+
+void Args::printTrainingHelp() {
+  std::cerr
+    << "\nThe following arguments for training are optional:\n"
+    << "  -lr                 learning rate [" << lr << "]\n"
+    << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
+    << "  -dim                size of word vectors [" << dim << "]\n"
+    << "  -ws                 size of the context window [" << ws << "]\n"
+    << "  -epoch              number of epochs [" << epoch << "]\n"
+    << "  -neg                number of negatives sampled [" << neg << "]\n"
+    << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
+    << "  -thread             number of threads [" << thread << "]\n"
+    << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
+    << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n";
+}
+
+void Args::printQuantizationHelp() {
+  std::cerr
+    << "\nThe following arguments for quantization are optional:\n"
+    << "  -cutoff             number of words and ngrams to retain [" << cutoff << "]\n"
+    << "  -retrain            finetune embeddings if a cutoff is applied [" << retrain << "]\n"
+    << "  -qnorm              quantizing the norm separately [" << qnorm << "]\n"
+    << "  -qout               quantizing the classifier [" << qout << "]\n"
+    << "  -dsub               size of each sub-vector [" << dsub << "]\n";
+}
+
+void Args::save(std::ostream& out) {
+  out.write((char*) &(dim), sizeof(int));
+  out.write((char*) &(ws), sizeof(int));
+  out.write((char*) &(epoch), sizeof(int));
+  out.write((char*) &(minCount), sizeof(int));
+  out.write((char*) &(neg), sizeof(int));
+  out.write((char*) &(wordNgrams), sizeof(int));
+  out.write((char*) &(loss), sizeof(loss_name));
+  out.write((char*) &(model), sizeof(model_name));
+  out.write((char*) &(bucket), sizeof(int));
+  out.write((char*) &(minn), sizeof(int));
+  out.write((char*) &(maxn), sizeof(int));
+  out.write((char*) &(emptyjschar), sizeof(char));
+  out.write((char*) &(minjn), sizeof(int));
+  out.write((char*) &(maxjn), sizeof(int));
+  out.write((char*) &(lrUpdateRate), sizeof(int));
+  out.write((char*) &(t), sizeof(double));
+}
+
+void Args::load(std::istream& in) {
+  in.read((char*) &(dim), sizeof(int));
+  in.read((char*) &(ws), sizeof(int));
+  in.read((char*) &(epoch), sizeof(int));
+  in.read((char*) &(minCount), sizeof(int));
+  in.read((char*) &(neg), sizeof(int));
+  in.read((char*) &(wordNgrams), sizeof(int));
+  in.read((char*) &(loss), sizeof(loss_name));
+  in.read((char*) &(model), sizeof(model_name));
+  in.read((char*) &(bucket), sizeof(int));
+  in.read((char*) &(minn), sizeof(int));
+  in.read((char*) &(maxn), sizeof(int));
+  in.read((char*) &(emptyjschar), sizeof(char));
+  in.read((char*) &(minjn), sizeof(int));
+  in.read((char*) &(maxjn), sizeof(int));
+  in.read((char*) &(lrUpdateRate), sizeof(int));
+  in.read((char*) &(t), sizeof(double));
+}
+
+}
