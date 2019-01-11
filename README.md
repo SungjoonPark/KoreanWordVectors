@@ -1,4 +1,4 @@
-# Word Vector Representation for Korean: Evaluation Set
+# Word Vector Representation for Korean
 **Subword-level Word Vector Representations for Korean**<br/>
 *Sungjoon Park, Jeongmin Byun, Sion Baek, Yongseok Cho, Alice Oh*<br/>
 *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018)*<br/>
@@ -80,4 +80,5 @@ $ [fastText_executable_path] print-word-vectors model.bin < queries.txt
 Note that  `queries.txt` should contain decomposed Korean words, such as ㄱㅏㅇㅇㅏeㅈㅣe for 강아지. You can also use `jamo_split` method in `decompose_letters.py` to obtain decomposed Korean words.
 
 ## Change Log
+01-11-19 : Add implementations. version 1.0
 05-04-18 : Initial upload of datasets. version 1.0
