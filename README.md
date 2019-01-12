@@ -4,7 +4,7 @@
 *Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL 2018)*<br/>
 
 ## Abstract
-Research on distributed word representations is focused on widely-used languages such as English. Although the same methods can be used for other languages, language-specific knowledge can enhance the accuracy and richness of word vector representations. In this paper, we look at improving distributed word representations for Korean using knowledge about the unique linguistic structure of Korean. Specifically, we decompose Korean words into the jamo-level, beyond the character-level, allowing a systematic use of subword information. To evaluate the vectors,w e develop Korean test sets for word similarity and analogy and make them publicly available. The results show that our simple method outperforms word2vec and character-level Skip-Grams on semantic and syntactic similarity and analogy tasks and contributes positively toward down-stream NLP tasks such as sentiment analysis.
+Research on distributed word representations is focused on widely-used languages such as English. Although the same methods can be used for other languages, language-specific knowledge can enhance the accuracy and richness of word vector representations. In this paper, we look at improving distributed word representations for Korean using knowledge about the unique linguistic structure of Korean. Specifically, we decompose Korean words into the jamo-level, beyond the character-level, allowing a systematic use of subword information. To evaluate the vectors, we develop Korean test sets for word similarity and analogy and make them publicly available. The results show that our simple method outperforms word2vec and character-level Skip-Grams on semantic and syntactic similarity and analogy tasks and contributes positively toward down-stream NLP tasks such as sentiment analysis.
 
 
 ## Dataset
@@ -60,14 +60,14 @@ Then, you can train subword-level word vectors for Korean. The source code depen
 The full list of parameters are given below.
 ```
 -minCount 		minimal number of word occurences
--minCountLabel 	minimal number of label occurences
--wordNgrams 	max length of word ngram
+-minCountLabel 	  minimal number of label occurences
+-wordNgrams 	 max length of word ngram
 -bucket 		number of buckets
 -minn 			min length of char ngram [1]
 -maxn 			max length of char ngram [4]
 -minjn 			min length of jamo ngram [3]
 -maxjn 			max length of jamo ngram [5]
--emptyjschar 	empty jongsung symbol ["e"]
+-emptyjschar 	  empty jongsung symbol ["e"]
 -t  			sampling threshold
 -label 			labels prefix
 ```
@@ -81,4 +81,5 @@ Note that  `queries.txt` should contain decomposed Korean words, such as ㄱㅏ�
 
 ## Change Log
 01-11-19 : Add implementations. version 1.0
+
 05-04-18 : Initial upload of datasets. version 1.0
