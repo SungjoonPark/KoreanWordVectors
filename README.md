@@ -59,18 +59,24 @@ Then, you can train subword-level word vectors for Korean. The source code depen
 ```
 The full list of parameters are given below.
 ```
--minCount 		minimal number of word occurences
--minCountLabel 	  minimal number of label occurences
--wordNgrams 	 max length of word ngram
--bucket 		number of buckets
--minn 			min length of char ngram [1]
--maxn 			max length of char ngram [4]
--minjn 			min length of jamo ngram [3]
--maxjn 			max length of jamo ngram [5]
--emptyjschar 	  empty jongsung symbol ["e"]
--t  			sampling threshold
--label 			labels prefix
+-minCount : minimal number of word occurences [5]
+-bucket : number of buckets [10000000]
+-minn : min length of char ngram [1]
+-maxn : max length of char ngram [4]
+-minjn : min length of jamo ngram [3]
+-maxjn : max length of jamo ngram [5]
+-emptyjschar : empty jongsung symbol ["e"]
+-t : sampling threshold [1e-4]
+-lr : learning rate [0.05]
+-dim : size of word vectors [100]
+-ws : size of the context window [5]
+-loss : loss function {ns, hs, softmax} [softmax]
+-neg : number of negatives sampled [5]
+-epoch : number of epochs [5]
+-thread : number of threads [12]
+-verbose : verbosity level [2]
 ```
+As written in the paper, the default number of character-level n-grams is set to 1-4, and the number of jamo-level n-grams is set to 3-5. As the number of n-grams increases, you should adjust the number of maximum unique n-grams (bucket), otherwise some n-grams will be overridden. We recommend 10,000,000 for approximately 3GB of (parsed) Korean corpus.
 
 ### Constructing Korean OOV word vectors
 The trained output file `[output_file_name].bin` can be used to compute word vectors for OOVs. Provided you have a text file `queries.txt` containing Korean decomposed words for which you want to compute vectors, use the following command:
@@ -80,6 +86,5 @@ $ [fastText_executable_path] print-word-vectors model.bin < queries.txt
 Note that  `queries.txt` should contain decomposed Korean words, such as ㄱㅏㅇㅇㅏeㅈㅣe for 강아지. You can also use `jamo_split` method in `decompose_letters.py` to obtain decomposed Korean words.
 
 ## Change Log
-01-11-19 : Add implementations. version 1.0
-
+01-11-19 : Add implementations. version 1.0 
 05-04-18 : Initial upload of datasets. version 1.0
